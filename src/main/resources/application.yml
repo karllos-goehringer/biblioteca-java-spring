@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: mini-projeto-1
+
+# Regras da secao 5 (valores provisorios - conferir com o enunciado)
+biblioteca:
+  aluno:
+    prazo-dias: 7
+    limite-emprestimos: 3
+    multa-diaria: 1.00
+  professor:
+    prazo-dias: 14
+    limite-emprestimos: 5
+    multa-diaria: 0.50
