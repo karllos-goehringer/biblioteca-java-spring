@@ -20,7 +20,7 @@ public class LeitorService {
     private final LeitorRepository leitorRepository;
 
     public List<LeitorResponse> listar(TipoPessoa tipo) {
-        return leitorRepository.findAll().stream()
+        return leitorRepository.buscarTodos().stream()
                 .filter(l -> tipo == null || l.getTipoPessoa() == tipo)
                 .sorted(Comparator.comparing(Leitor::getId))
                 .map(this::toResponse)
@@ -32,35 +32,35 @@ public class LeitorService {
     }
 
     public LeitorResponse criar(LeitorRequest request) {
-        if (leitorRepository.existsByEmailIgnoreCase(request.email())) {
+        if (leitorRepository.existePorEmail(request.email())) {
             throw new EmailJaCadastradoException(request.email());
         }
         Leitor leitor = new Leitor(null, request.nome(), request.email(), request.tipo());
-        return toResponse(leitorRepository.save(leitor));
+        return toResponse(leitorRepository.salvar(leitor));
     }
 
     public LeitorResponse atualizar(Long id, LeitorRequest request) {
         Leitor leitor = buscarEntidade(id);
-        if (leitorRepository.existsByEmailIgnoreCaseAndIdNot(request.email(), id)) {
+        if (leitorRepository.existePorEmailEIdDiferente(request.email(), id)) {
             throw new EmailJaCadastradoException(request.email());
         }
         leitor.setNome(request.nome());
         leitor.setEmail(request.email());
         leitor.setTipoPessoa(request.tipo());
-        return toResponse(leitorRepository.save(leitor));
+        return toResponse(leitorRepository.salvar(leitor));
     }
 
     public void remover(Long id) {
-        if (!leitorRepository.existsById(id)) {
+        if (!leitorRepository.existePorId(id)) {
             throw new LeitorNaoEncontradoException(id);
         }
         // TODO RN09: impedir remoção se o leitor tiver empréstimo ativo (quando o EmprestimoRepository existir)
-        leitorRepository.deleteById(id);
+        leitorRepository.removerPorId(id);
     }
 
     /** Usado também por outros services (ex.: empréstimo) para obter a entidade. */
     public Leitor buscarEntidade(Long id) {
-        return leitorRepository.findById(id)
+        return leitorRepository.buscarPorId(id)
                 .orElseThrow(() -> new LeitorNaoEncontradoException(id));
     }
 

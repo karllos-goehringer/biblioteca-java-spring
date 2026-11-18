@@ -6,23 +6,24 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Contrato de persistência de leitores. Usa os nomes do Spring Data para que a
- * implementação em memória possa ser trocada por um repositório JPA/SQL sem
- * alterar o service.
+ * Contrato de persistência de leitores. O service depende só desta interface,
+ * então a implementação (em memória, banco etc.) pode ser trocada sem alterá-lo.
  */
 public interface LeitorRepository {
 
-    List<Leitor> findAll();
+    List<Leitor> buscarTodos();
 
-    Optional<Leitor> findById(Long id);
+    Optional<Leitor> buscarPorId(Long id);
 
-    Leitor save(Leitor leitor);
+    Leitor salvar(Leitor leitor);
 
-    void deleteById(Long id);
+    void removerPorId(Long id);
 
-    boolean existsById(Long id);
+    boolean existePorId(Long id);
 
-    boolean existsByEmailIgnoreCase(String email);
+    /** RN02: verifica e-mail ignorando maiúsculas/minúsculas. */
+    boolean existePorEmail(String email);
 
-    boolean existsByEmailIgnoreCaseAndIdNot(String email, Long id);
+    /** RN02 na atualização: e-mail usado por outro leitor que não o de {@code id}. */
+    boolean existePorEmailEIdDiferente(String email, Long id);
 }

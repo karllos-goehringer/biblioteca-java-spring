@@ -18,17 +18,17 @@ public class LeitorRepositoryEmMemoria implements LeitorRepository {
     private final AtomicLong sequencia = new AtomicLong();
 
     @Override
-    public List<Leitor> findAll() {
+    public List<Leitor> buscarTodos() {
         return new ArrayList<>(dados.values());
     }
 
     @Override
-    public Optional<Leitor> findById(Long id) {
+    public Optional<Leitor> buscarPorId(Long id) {
         return Optional.ofNullable(dados.get(id));
     }
 
     @Override
-    public Leitor save(Leitor leitor) {
+    public Leitor salvar(Leitor leitor) {
         if (leitor.getId() == null) {
             leitor.setId(sequencia.incrementAndGet());
         }
@@ -37,23 +37,23 @@ public class LeitorRepositoryEmMemoria implements LeitorRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void removerPorId(Long id) {
         dados.remove(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public boolean existePorId(Long id) {
         return dados.containsKey(id);
     }
 
     @Override
-    public boolean existsByEmailIgnoreCase(String email) {
+    public boolean existePorEmail(String email) {
         return dados.values().stream()
                 .anyMatch(l -> l.getEmail().equalsIgnoreCase(email));
     }
 
     @Override
-    public boolean existsByEmailIgnoreCaseAndIdNot(String email, Long id) {
+    public boolean existePorEmailEIdDiferente(String email, Long id) {
         return dados.values().stream()
                 .anyMatch(l -> !l.getId().equals(id) && l.getEmail().equalsIgnoreCase(email));
     }
