@@ -7,14 +7,16 @@ import java.util.stream.Stream;
 public record LivroFiltro(
         String titulo,
         String autor,
-        Integer ano
+        Integer ano,
+        Boolean disponivel
 ) {
 
     public CriterioBuscaLivro criterio() {
         return Stream.of(
                 Map.entry(CriterioBuscaLivro.TITULO, Objects.nonNull(titulo)),
                 Map.entry(CriterioBuscaLivro.AUTOR, Objects.nonNull(autor)),
-                Map.entry(CriterioBuscaLivro.ANO, Objects.nonNull(ano)))
+                Map.entry(CriterioBuscaLivro.ANO, Objects.nonNull(ano)),
+                Map.entry(CriterioBuscaLivro.DISPONIVEL, Objects.nonNull(disponivel)))
                 .filter(Map.Entry::getValue)
                 .map(Map.Entry::getKey)
                 .findFirst()

@@ -198,6 +198,76 @@
           ]
         },
         {
+          "name": "Filtrar livros disponíveis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/livros?disponivel=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "livros"
+              ],
+              "query": [
+                {
+                  "key": "disponivel",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Retorna 4 registro(s)\", () => pm.expect(pm.response.json()).to.have.lengthOf(4));",
+                  "pm.test(\"Não traz livros esgotados (2 e 4)\", () => pm.expect(pm.response.json().map(l => l.id)).to.not.include.members([2, 4]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar livros indisponíveis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/livros?disponivel=false",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "livros"
+              ],
+              "query": [
+                {
+                  "key": "disponivel",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Retorna 2 registro(s)\", () => pm.expect(pm.response.json()).to.have.lengthOf(2));",
+                  "pm.test(\"Somente O Cortiço e Clean Code\", () => pm.expect(pm.response.json().map(l => l.id)).to.have.members([2, 4]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Criar livro",
           "request": {
             "method": "POST",
@@ -814,6 +884,106 @@
                 "exec": [
                   "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
                   "pm.test(\"Retorna 2 registro(s)\", () => pm.expect(pm.response.json()).to.have.lengthOf(2));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar empréstimos ativos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/emprestimos?ativos=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "emprestimos"
+              ],
+              "query": [
+                {
+                  "key": "ativos",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Retorna 5 registro(s)\", () => pm.expect(pm.response.json()).to.have.lengthOf(5));",
+                  "pm.test(\"Nenhum devolvido\", () => pm.response.json().forEach(e => pm.expect(e.dataDevolucao).to.be.null));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar empréstimos devolvidos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/emprestimos?ativos=false",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "emprestimos"
+              ],
+              "query": [
+                {
+                  "key": "ativos",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Retorna 2 registro(s)\", () => pm.expect(pm.response.json()).to.have.lengthOf(2));",
+                  "pm.test(\"Todos devolvidos\", () => pm.response.json().forEach(e => pm.expect(e.dataDevolucao).to.not.be.null));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar empréstimos atrasados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/emprestimos/atrasados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "emprestimos",
+                "atrasados"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Retorna 1 registro(s)\", () => pm.expect(pm.response.json()).to.have.lengthOf(1));",
+                  "pm.test(\"Somente o empréstimo 4, ativo e atrasado\", () => { const e = pm.response.json()[0]; pm.expect(e.id).to.eql(4); pm.expect(e.atrasado).to.be.true; pm.expect(e.dataDevolucao).to.be.null; });"
                 ]
               }
             }

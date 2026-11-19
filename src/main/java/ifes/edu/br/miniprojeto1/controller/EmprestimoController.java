@@ -31,6 +31,11 @@ public class EmprestimoController {
         return emprestimoService.listar(filtro);
     }
 
+    @GetMapping("/atrasados")
+    public List<EmprestimoResponse> listarAtrasados() {
+        return emprestimoService.listarAtrasados();
+    }
+
     @GetMapping("/{id}")
     public EmprestimoResponse buscarPorId(@PathVariable Long id) {
         return emprestimoService.buscarPorId(id);

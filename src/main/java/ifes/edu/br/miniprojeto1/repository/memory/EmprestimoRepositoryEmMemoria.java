@@ -102,6 +102,20 @@ public class EmprestimoRepositoryEmMemoria implements EmprestimoRepository {
                         && e.getDataPrevistaDevolucao().isBefore(hoje));
     }
 
+    @Override
+    public List<Emprestimo> buscarPorAtivo(boolean ativo) {
+        return dados.values().stream()
+                .filter(e -> estaAtivo(e) == ativo)
+                .toList();
+    }
+
+    @Override
+    public List<Emprestimo> buscarAtrasados(LocalDate hoje) {
+        return dados.values().stream()
+                .filter(e -> estaAtivo(e) && e.getDataPrevistaDevolucao().isBefore(hoje))
+                .toList();
+    }
+
     private boolean estaAtivo(Emprestimo emprestimo) {
         return emprestimo.getDataDevolucao() == null;
     }

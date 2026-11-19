@@ -32,4 +32,8 @@ public interface EmprestimoRepository {
     boolean existeAtivoPorLeitorId(Long leitorId);
 
     boolean existeAtrasadoPorLeitorId(Long leitorId, LocalDate hoje);
+
+    List<Emprestimo> buscarPorAtivo(boolean ativo);
+
+    List<Emprestimo> buscarAtrasados(LocalDate hoje);
 }

@@ -10,14 +10,16 @@ import java.util.stream.Stream;
 public record EmprestimoFiltro(
         Long leitorId,
         Long livroId,
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+        Boolean ativos
 ) {
 
     public CriterioBuscaEmprestimo criterio() {
         return Stream.of(
                 Map.entry(CriterioBuscaEmprestimo.LEITOR, Objects.nonNull(leitorId)),
                 Map.entry(CriterioBuscaEmprestimo.LIVRO, Objects.nonNull(livroId)),
-                Map.entry(CriterioBuscaEmprestimo.DATA, Objects.nonNull(data)))
+                Map.entry(CriterioBuscaEmprestimo.DATA, Objects.nonNull(data)),
+                Map.entry(CriterioBuscaEmprestimo.ATIVOS, Objects.nonNull(ativos)))
                 .filter(Map.Entry::getValue)
                 .map(Map.Entry::getKey)
                 .findFirst()

@@ -70,6 +70,14 @@ public class EmprestimoService {
         return emprestimoMapper.toResponseList(emprestimos, hoje());
     }
 
+    public List<EmprestimoResponse> listarAtrasados() {
+        LocalDate hoje = hoje();
+        List<Emprestimo> atrasados = emprestimoRepository.buscarAtrasados(hoje).stream()
+                .sorted(Comparator.comparing(Emprestimo::getId))
+                .toList();
+        return emprestimoMapper.toResponseList(atrasados, hoje);
+    }
+
     public EmprestimoResponse buscarPorId(Long id) {
         return emprestimoMapper.toResponse(buscarEntidade(id), hoje());
     }
