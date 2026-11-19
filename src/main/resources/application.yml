@@ -1,9 +1,14 @@
 spring:
   application:
     name: mini-projeto-1
+  config:
+    # Le o .env da raiz do projeto como arquivo .properties (opcional: sem .env sobe normal)
+    import: optional:file:.env[.properties]
 
 # Regras da secao 5 (valores provisorios - conferir com o enunciado)
 biblioteca:
+  # CARGA_INICIAL=true popula a API com dados mock; qualquer outro valor (off, false) nao carrega
+  carga-inicial: ${CARGA_INICIAL:false}
   aluno:
     prazo-dias: 7
     limite-emprestimos: 3
