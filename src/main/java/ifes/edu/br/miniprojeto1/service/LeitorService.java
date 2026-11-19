@@ -2,59 +2,72 @@ package ifes.edu.br.miniprojeto1.service;
 
 import ifes.edu.br.miniprojeto1.dto.LeitorRequest;
 import ifes.edu.br.miniprojeto1.dto.LeitorResponse;
-import ifes.edu.br.miniprojeto1.exception.EmailJaCadastradoException;
+import ifes.edu.br.miniprojeto1.dto.filtro.CriterioBuscaLeitor;
+import ifes.edu.br.miniprojeto1.dto.filtro.LeitorFiltro;
 import ifes.edu.br.miniprojeto1.exception.LeitorNaoEncontradoException;
+import ifes.edu.br.miniprojeto1.mapper.LeitorMapper;
 import ifes.edu.br.miniprojeto1.model.Leitor;
-import ifes.edu.br.miniprojeto1.model.TipoPessoa;
 import ifes.edu.br.miniprojeto1.repository.LeitorRepository;
-import lombok.RequiredArgsConstructor;
+import ifes.edu.br.miniprojeto1.service.busca.BuscaLeitor;
+import ifes.edu.br.miniprojeto1.service.regra.RegraCadastroLeitor;
+import ifes.edu.br.miniprojeto1.service.regra.RegraRemocaoLeitor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class LeitorService {
 
     private final LeitorRepository leitorRepository;
+    private final LeitorMapper leitorMapper;
+    private final Map<CriterioBuscaLeitor, BuscaLeitor> buscas;
+    private final List<RegraCadastroLeitor> regrasCadastro;
+    private final List<RegraRemocaoLeitor> regrasRemocao;
 
-    public List<LeitorResponse> listar(TipoPessoa tipo) {
-        return leitorRepository.buscarTodos().stream()
-                .filter(l -> tipo == null || l.getTipoPessoa() == tipo)
+    public LeitorService(LeitorRepository leitorRepository,
+                         LeitorMapper leitorMapper,
+                         List<BuscaLeitor> buscas,
+                         List<RegraCadastroLeitor> regrasCadastro,
+                         List<RegraRemocaoLeitor> regrasRemocao) {
+        this.leitorRepository = leitorRepository;
+        this.leitorMapper = leitorMapper;
+        this.buscas = buscas.stream()
+                .collect(Collectors.toMap(BuscaLeitor::criterio, Function.identity()));
+        this.regrasCadastro = regrasCadastro;
+        this.regrasRemocao = regrasRemocao;
+    }
+
+    public List<LeitorResponse> listar(LeitorFiltro filtro) {
+        List<Leitor> leitores = buscas.get(filtro.criterio()).buscar(filtro).stream()
                 .sorted(Comparator.comparing(Leitor::getId))
-                .map(this::toResponse)
                 .toList();
+        return leitorMapper.toResponseList(leitores);
     }
 
     public LeitorResponse buscarPorId(Long id) {
-        return toResponse(buscarEntidade(id));
+        return leitorMapper.toResponse(buscarEntidade(id));
     }
 
     public LeitorResponse criar(LeitorRequest request) {
-        if (leitorRepository.existePorEmail(request.email())) {
-            throw new EmailJaCadastradoException(request.email());
-        }
-        Leitor leitor = new Leitor(null, request.nome(), request.email(), request.tipo());
-        return toResponse(leitorRepository.salvar(leitor));
+        regrasCadastro.forEach(regra -> regra.validar(null, request));        // RN02
+        Leitor leitor = leitorMapper.toEntity(request);
+        return leitorMapper.toResponse(leitorRepository.salvar(leitor));
     }
 
     public LeitorResponse atualizar(Long id, LeitorRequest request) {
-        Leitor leitor = buscarEntidade(id);
-        if (leitorRepository.existePorEmailEIdDiferente(request.email(), id)) {
-            throw new EmailJaCadastradoException(request.email());
-        }
-        leitor.setNome(request.nome());
-        leitor.setEmail(request.email());
-        leitor.setTipoPessoa(request.tipo());
-        return toResponse(leitorRepository.salvar(leitor));
+        Leitor leitor = buscarEntidade(id);                                     // RN10
+        regrasCadastro.forEach(regra -> regra.validar(id, request));          // RN02
+        leitorMapper.atualizarEntidade(leitor, request);
+        return leitorMapper.toResponse(leitorRepository.salvar(leitor));
     }
 
     public void remover(Long id) {
-        if (!leitorRepository.existePorId(id)) {
-            throw new LeitorNaoEncontradoException(id);
-        }
-        // TODO RN09: impedir remoção se o leitor tiver empréstimo ativo (quando o EmprestimoRepository existir)
+        Leitor leitor = buscarEntidade(id);                                     // RN10
+        regrasRemocao.forEach(regra -> regra.validar(leitor));                 // RN09
         leitorRepository.removerPorId(id);
     }
 
@@ -62,9 +75,5 @@ public class LeitorService {
     public Leitor buscarEntidade(Long id) {
         return leitorRepository.buscarPorId(id)
                 .orElseThrow(() -> new LeitorNaoEncontradoException(id));
-    }
-
-    private LeitorResponse toResponse(Leitor leitor) {
-        return new LeitorResponse(leitor.getId(), leitor.getNome(), leitor.getEmail(), leitor.getTipoPessoa());
     }
 }

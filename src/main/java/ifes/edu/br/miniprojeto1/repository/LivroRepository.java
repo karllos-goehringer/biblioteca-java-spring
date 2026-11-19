@@ -20,6 +20,8 @@ public interface LivroRepository {
 
     List<Livro> buscarPorTitulo(String titulo);
 
+    List<Livro> buscarPorAutor(String autor);
+
     Optional<Livro> buscarPorIsbn(String isbn);
 
     boolean existePorIsbn(String isbn);

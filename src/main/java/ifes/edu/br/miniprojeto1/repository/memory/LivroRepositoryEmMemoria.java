@@ -64,6 +64,14 @@ public class LivroRepositoryEmMemoria implements LivroRepository {
     }
 
     @Override
+    public List<Livro> buscarPorAutor(String autor) {
+        String trecho = autor.toLowerCase(Locale.ROOT);
+        return dados.values().stream()
+                .filter(l -> l.getAutor().toLowerCase(Locale.ROOT).contains(trecho))
+                .toList();
+    }
+
+    @Override
     public Optional<Livro> buscarPorIsbn(String isbn) {
         return dados.values().stream()
                 .filter(l -> l.getIsbn().equals(isbn))
