@@ -3,6 +3,8 @@ package ifes.edu.br.miniprojeto1.controller;
 import ifes.edu.br.miniprojeto1.dto.LivroRequest;
 import ifes.edu.br.miniprojeto1.dto.LivroResponse;
 import ifes.edu.br.miniprojeto1.dto.filtro.LivroFiltro;
+import ifes.edu.br.miniprojeto1.mapper.LivroMapper;
+import ifes.edu.br.miniprojeto1.model.Livro;
 import ifes.edu.br.miniprojeto1.service.LivroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,33 +29,34 @@ import java.util.List;
 public class LivroController {
 
     private final LivroService livroService;
+    private final LivroMapper livroMapper;
 
     @GetMapping
     public List<LivroResponse> listar(@ModelAttribute LivroFiltro filtro) {
-        return livroService.listar(filtro);
+        return livroMapper.toResponseList(livroService.listar(filtro));
     }
 
     @GetMapping("/{id}")
     public LivroResponse buscarPorId(@PathVariable Long id) {
-        return livroService.buscarPorId(id);
+        return livroMapper.toResponse(livroService.buscarPorId(id));
     }
 
     @GetMapping("/isbn/{isbn}")
     public LivroResponse buscarPorIsbn(@PathVariable String isbn) {
-        return livroService.buscarPorIsbn(isbn);
+        return livroMapper.toResponse(livroService.buscarPorIsbn(isbn));
     }
 
     @PostMapping
     public ResponseEntity<LivroResponse> criar(@Valid @RequestBody LivroRequest request) {
-        LivroResponse criado = livroService.criar(request);
+        Livro criado = livroService.criar(request);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}").buildAndExpand(criado.id()).toUri();
-        return ResponseEntity.created(location).body(criado);
+                .path("/{id}").buildAndExpand(criado.getId()).toUri();
+        return ResponseEntity.created(location).body(livroMapper.toResponse(criado));
     }
 
     @PutMapping("/{id}")
     public LivroResponse atualizar(@PathVariable Long id, @Valid @RequestBody LivroRequest request) {
-        return livroService.atualizar(id, request);
+        return livroMapper.toResponse(livroService.atualizar(id, request));
     }
 
     @DeleteMapping("/{id}")

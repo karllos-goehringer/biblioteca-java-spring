@@ -3,6 +3,8 @@ package ifes.edu.br.miniprojeto1.controller;
 import ifes.edu.br.miniprojeto1.dto.LeitorRequest;
 import ifes.edu.br.miniprojeto1.dto.LeitorResponse;
 import ifes.edu.br.miniprojeto1.dto.filtro.LeitorFiltro;
+import ifes.edu.br.miniprojeto1.mapper.LeitorMapper;
+import ifes.edu.br.miniprojeto1.model.Leitor;
 import ifes.edu.br.miniprojeto1.service.LeitorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,28 +29,29 @@ import java.util.List;
 public class LeitorController {
 
     private final LeitorService leitorService;
+    private final LeitorMapper leitorMapper;
 
     @GetMapping
     public List<LeitorResponse> listar(@ModelAttribute LeitorFiltro filtro) {
-        return leitorService.listar(filtro);
+        return leitorMapper.toResponseList(leitorService.listar(filtro));
     }
 
     @GetMapping("/{id}")
     public LeitorResponse buscarPorId(@PathVariable Long id) {
-        return leitorService.buscarPorId(id);
+        return leitorMapper.toResponse(leitorService.buscarPorId(id));
     }
 
     @PostMapping
     public ResponseEntity<LeitorResponse> criar(@Valid @RequestBody LeitorRequest request) {
-        LeitorResponse criado = leitorService.criar(request);
+        Leitor criado = leitorService.criar(request);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}").buildAndExpand(criado.id()).toUri();
-        return ResponseEntity.created(location).body(criado);
+                .path("/{id}").buildAndExpand(criado.getId()).toUri();
+        return ResponseEntity.created(location).body(leitorMapper.toResponse(criado));
     }
 
     @PutMapping("/{id}")
     public LeitorResponse atualizar(@PathVariable Long id, @Valid @RequestBody LeitorRequest request) {
-        return leitorService.atualizar(id, request);
+        return leitorMapper.toResponse(leitorService.atualizar(id, request));
     }
 
     @DeleteMapping("/{id}")
