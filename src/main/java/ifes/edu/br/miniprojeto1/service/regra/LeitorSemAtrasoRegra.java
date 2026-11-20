@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
-/** RN05: leitor com empréstimo atrasado não pode fazer novo empréstimo. */
 @Component
 @Order(3)
 @RequiredArgsConstructor

@@ -11,6 +11,7 @@ import ifes.edu.br.miniprojeto1.repository.LivroRepository;
 import ifes.edu.br.miniprojeto1.service.busca.BuscaLivro;
 import ifes.edu.br.miniprojeto1.service.regra.RegraCadastroLivro;
 import ifes.edu.br.miniprojeto1.service.regra.RegraRemocaoLivro;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -20,6 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class LivroService {
 
     private final LivroRepository livroRepository;
@@ -28,18 +30,7 @@ public class LivroService {
     private final List<RegraCadastroLivro> regrasCadastro;
     private final List<RegraRemocaoLivro> regrasRemocao;
 
-    public LivroService(LivroRepository livroRepository,
-                        LivroMapper livroMapper,
-                        List<BuscaLivro> buscas,
-                        List<RegraCadastroLivro> regrasCadastro,
-                        List<RegraRemocaoLivro> regrasRemocao) {
-        this.livroRepository = livroRepository;
-        this.livroMapper = livroMapper;
-        this.buscas = buscas.stream()
-                .collect(Collectors.toMap(BuscaLivro::criterio, Function.identity()));
-        this.regrasCadastro = regrasCadastro;
-        this.regrasRemocao = regrasRemocao;
-    }
+    
 
     public List<LivroResponse> listar(LivroFiltro filtro) {
         List<Livro> livros = buscas.get(filtro.criterio()).buscar(filtro).stream()
@@ -77,7 +68,6 @@ public class LivroService {
         livroRepository.removerPorId(id);
     }
 
-    /** Usado também por outros services (ex.: empréstimo) para obter a entidade. */
     public Livro buscarEntidade(Long id) {
         return livroRepository.buscarPorId(id)
                 .orElseThrow(() -> new LivroNaoEncontradoException(id));

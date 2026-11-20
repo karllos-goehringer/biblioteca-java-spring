@@ -6,7 +6,6 @@ import ifes.edu.br.miniprojeto1.service.strategy.PoliticaEmprestimo;
 
 import java.time.LocalDate;
 
-/** Regra verificada antes de criar um empréstimo. Cada implementação é uma regra (Strategy). */
 public interface RegraEmprestimo {
     void validar(Livro livro, Leitor leitor, PoliticaEmprestimo politica, LocalDate hoje);
 }

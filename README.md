@@ -34,3 +34,4 @@ lista de endpoints:
 
 
 Decisões de projeto:
+Comecei o desenvolvimento pelas classes de modelagem, de acordo com a descrição da atividade, a questão de diferenciar as multas "normais" das multas de avaria eu peguei de referência de um diagrama de biblioteca das antigas aulas do Maicon em db1, Com base nas classes de modelagem foi desenvolvido as interfaces de cada classe pro Repository que depois foram aplicadas nos repositorys que estão em memory na pasta repository/memory.

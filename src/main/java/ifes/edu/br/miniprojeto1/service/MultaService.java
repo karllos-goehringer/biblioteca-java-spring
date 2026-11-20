@@ -8,6 +8,7 @@ import ifes.edu.br.miniprojeto1.mapper.MultaMapper;
 import ifes.edu.br.miniprojeto1.model.Multa;
 import ifes.edu.br.miniprojeto1.repository.MultaRepository;
 import ifes.edu.br.miniprojeto1.service.busca.BuscaMulta;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class MultaService {
 
     private final MultaRepository multaRepository;
@@ -26,16 +28,6 @@ public class MultaService {
     private final Clock clock;
     private final Map<CriterioBuscaMulta, BuscaMulta> buscas;
 
-    public MultaService(MultaRepository multaRepository,
-                        MultaMapper multaMapper,
-                        Clock clock,
-                        List<BuscaMulta> buscas) {
-        this.multaRepository = multaRepository;
-        this.multaMapper = multaMapper;
-        this.clock = clock;
-        this.buscas = buscas.stream()
-                .collect(Collectors.toMap(BuscaMulta::criterio, Function.identity()));
-    }
 
     public List<MultaResponse> listar(MultaFiltro filtro) {
         List<Multa> multas = buscas.get(filtro.criterio()).buscar(filtro).stream()

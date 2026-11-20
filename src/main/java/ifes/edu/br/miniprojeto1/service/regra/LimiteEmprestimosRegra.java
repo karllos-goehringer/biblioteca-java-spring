@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
-/** RN04: limite de empréstimos ativos conforme a política do tipo de leitor. */
 @Component
 @Order(2)
 @RequiredArgsConstructor

@@ -16,6 +16,7 @@ import ifes.edu.br.miniprojeto1.repository.MultaRepository;
 import ifes.edu.br.miniprojeto1.service.busca.BuscaEmprestimo;
 import ifes.edu.br.miniprojeto1.service.regra.RegraEmprestimo;
 import ifes.edu.br.miniprojeto1.service.strategy.PoliticaEmprestimo;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -29,6 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class EmprestimoService {
 
     private final EmprestimoRepository emprestimoRepository;
@@ -41,27 +43,7 @@ public class EmprestimoService {
     private final Map<CriterioBuscaEmprestimo, BuscaEmprestimo> buscas;
     private final List<RegraEmprestimo> regras;
 
-    public EmprestimoService(EmprestimoRepository emprestimoRepository,
-                             MultaRepository multaRepository,
-                             LivroService livroService,
-                             LeitorService leitorService,
-                             EmprestimoMapper emprestimoMapper,
-                             Clock clock,
-                             List<PoliticaEmprestimo> politicas,
-                             List<BuscaEmprestimo> buscas,
-                             List<RegraEmprestimo> regras) {
-        this.emprestimoRepository = emprestimoRepository;
-        this.multaRepository = multaRepository;
-        this.livroService = livroService;
-        this.leitorService = leitorService;
-        this.emprestimoMapper = emprestimoMapper;
-        this.clock = clock;
-        this.politicas = politicas.stream()
-                .collect(Collectors.toMap(PoliticaEmprestimo::tipo, Function.identity()));
-        this.buscas = buscas.stream()
-                .collect(Collectors.toMap(BuscaEmprestimo::criterio, Function.identity()));
-        this.regras = regras;
-    }
+
 
     public List<EmprestimoResponse> listar(EmprestimoFiltro filtro) {
         List<Emprestimo> emprestimos = buscas.get(filtro.criterio()).buscar(filtro).stream()

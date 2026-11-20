@@ -6,7 +6,6 @@ import ifes.edu.br.miniprojeto1.repository.EmprestimoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/** RN09: leitor com empréstimo ativo não pode ser removido. */
 @Component
 @RequiredArgsConstructor
 public class LeitorSemEmprestimoAtivoRegra implements RegraRemocaoLeitor {

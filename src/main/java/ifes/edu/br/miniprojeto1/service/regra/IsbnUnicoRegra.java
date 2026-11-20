@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-/** RN01: o ISBN não pode se repetir entre livros. */
 @Component
 @Order(1)
 @RequiredArgsConstructor

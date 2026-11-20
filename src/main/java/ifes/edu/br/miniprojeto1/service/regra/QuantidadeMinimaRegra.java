@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-/** Na atualização, quantidadeTotal não pode ficar menor que os empréstimos ativos do livro. */
 @Component
 @Order(2)
 @RequiredArgsConstructor

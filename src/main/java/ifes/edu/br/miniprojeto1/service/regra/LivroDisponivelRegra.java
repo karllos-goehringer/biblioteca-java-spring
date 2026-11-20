@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
-/** RN03: só há empréstimo se houver exemplar disponível (quantidadeTotal - empréstimos ativos). */
 @Component
 @Order(1)
 @RequiredArgsConstructor

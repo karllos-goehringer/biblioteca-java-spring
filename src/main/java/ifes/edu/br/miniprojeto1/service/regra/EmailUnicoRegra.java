@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-/** RN02: o e-mail não pode se repetir entre leitores. */
 @Component
 @RequiredArgsConstructor
 public class EmailUnicoRegra implements RegraCadastroLeitor {

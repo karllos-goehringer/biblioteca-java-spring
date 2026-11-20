@@ -11,6 +11,7 @@ import ifes.edu.br.miniprojeto1.repository.LeitorRepository;
 import ifes.edu.br.miniprojeto1.service.busca.BuscaLeitor;
 import ifes.edu.br.miniprojeto1.service.regra.RegraCadastroLeitor;
 import ifes.edu.br.miniprojeto1.service.regra.RegraRemocaoLeitor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -20,6 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class LeitorService {
 
     private final LeitorRepository leitorRepository;
@@ -28,41 +30,28 @@ public class LeitorService {
     private final List<RegraCadastroLeitor> regrasCadastro;
     private final List<RegraRemocaoLeitor> regrasRemocao;
 
-    public LeitorService(LeitorRepository leitorRepository,
-                         LeitorMapper leitorMapper,
-                         List<BuscaLeitor> buscas,
-                         List<RegraCadastroLeitor> regrasCadastro,
-                         List<RegraRemocaoLeitor> regrasRemocao) {
-        this.leitorRepository = leitorRepository;
-        this.leitorMapper = leitorMapper;
-        this.buscas = buscas.stream()
-                .collect(Collectors.toMap(BuscaLeitor::criterio, Function.identity()));
-        this.regrasCadastro = regrasCadastro;
-        this.regrasRemocao = regrasRemocao;
-    }
 
-    public List<LeitorResponse> listar(LeitorFiltro filtro) {
-        List<Leitor> leitores = buscas.get(filtro.criterio()).buscar(filtro).stream()
+    public List<Leitor> listar(LeitorFiltro filtro) {
+        return buscas.get(filtro.criterio()).buscar(filtro).stream()
                 .sorted(Comparator.comparing(Leitor::getId))
                 .toList();
-        return leitorMapper.toResponseList(leitores);
     }
 
-    public LeitorResponse buscarPorId(Long id) {
-        return leitorMapper.toResponse(buscarEntidade(id));
+    public Leitor buscarPorId(Long id) {
+        return (buscarEntidade(id));
     }
 
-    public LeitorResponse criar(LeitorRequest request) {
+    public Leitor criar(LeitorRequest request) {
         regrasCadastro.forEach(regra -> regra.validar(null, request));        // RN02
         Leitor leitor = leitorMapper.toEntity(request);
-        return leitorMapper.toResponse(leitorRepository.salvar(leitor));
+        return leitorRepository.salvar(leitor);
     }
 
-    public LeitorResponse atualizar(Long id, LeitorRequest request) {
+    public Leitor atualizar(Long id, LeitorRequest request) {
         Leitor leitor = buscarEntidade(id);                                     // RN10
         regrasCadastro.forEach(regra -> regra.validar(id, request));          // RN02
         leitorMapper.atualizarEntidade(leitor, request);
-        return leitorMapper.toResponse(leitorRepository.salvar(leitor));
+        return leitorRepository.salvar(leitor);
     }
 
     public void remover(Long id) {
@@ -71,7 +60,6 @@ public class LeitorService {
         leitorRepository.removerPorId(id);
     }
 
-    /** Usado também por outros services (ex.: empréstimo) para obter a entidade. */
     public Leitor buscarEntidade(Long id) {
         return leitorRepository.buscarPorId(id)
                 .orElseThrow(() -> new LeitorNaoEncontradoException(id));

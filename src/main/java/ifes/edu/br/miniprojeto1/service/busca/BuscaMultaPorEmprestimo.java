@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/** RN10: o empréstimo informado precisa existir. */
 @Component
 @RequiredArgsConstructor
 public class BuscaMultaPorEmprestimo implements BuscaMulta {
